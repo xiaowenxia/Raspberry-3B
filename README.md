@@ -45,3 +45,34 @@ wpa－psk   接入AP的密码
 ```` sh
 sudo /etc/init.d/networking restart
 ````
+
+
+### 树莓派搭建git服务器
+添加一个git系统账户：
+```sh
+adduser --system --shell /bin/bash --gecos 'git version control by pi' --group --home /home/git git
+```
+设置git账户的密码：
+```sh
+passwd git
+```
+建立git仓库
+```sh
+cd /home/git
+mkdir -p workspace/zephyr.git
+cd workspace/zephyr.git
+git --bare init
+```
+把本地仓库加入到一个新的远程主机
+```sh
+git remote add pi git@[IP]:/home/git/workspace/zephyr.git
+```
+这时候只需要push一下即可
+```sh
+echo "### zephyr project" > README.md
+git add .
+git commit -m "first commit"
+git push pi master
+```
+git 
+

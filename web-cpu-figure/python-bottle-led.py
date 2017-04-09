@@ -26,4 +26,4 @@ def cmd():
 	#print "button:" + request.body.read()
 	return template('{"percent":{{per}},"freq":{{frq}}}', per=cpu_percent, frq=cpu_freq)
 
-run(host="192.168.0.131")
+run(host="192.168.9.18")
