@@ -46,6 +46,12 @@ wpa－psk   接入AP的密码
 sudo /etc/init.d/networking restart
 ````
 
+#### 如何更改树莓派的主机名称
+编辑如下两个文件（2个文件都需要更改）
+```sh
+sudo vim /etc/hostname
+sudo vim /etc/hosts
+```
 
 ### 树莓派搭建git服务器
 添加一个git系统账户：
