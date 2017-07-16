@@ -90,6 +90,7 @@ win+R
 mount -t cifs //192.168.1.14/xiaxiaowen /mnt/raspberrypi/ -o username=xiaxiaowen
 ```
 ### 为树莓派安装tensorflow
+该安装方法参照 https://github.com/samjabrahams/tensorflow-on-raspberry-pi
 首先安装python pip
 ```sh
 # For Python 2.7
