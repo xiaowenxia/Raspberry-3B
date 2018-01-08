@@ -33,19 +33,21 @@ stderr:文件标识符为2
 
 ### pthread_join
 等待一个线程的结束,线程间同步的操作。
-### 
+
 ### 树莓派
+#### Raspbian开启ssh权限
 1. Raspbian 默认没有开启ssh，要开启分区需要在sd卡的root分区建一个ssh的文件。
-2. 添加用户：
+#### 添加用户
 ```sh
 $sudo adduser xiaxiaowen
 $sudo passwd xiaxiaowen
 $passwd
 ```
+> 用useradd会导致不能自动补全，adduser会新建/home/xiaxiaowen，并能够自动补全
 
-用useradd会导致不能自动补全，adduser会新建/home/xiaxiaowen，并能够自动补全
+#### xiaxiaowen is not in the sudoers file
+解决办法:
 
-3. xiaxiaowen is not in the sudoers file 解决:
 ```sh
 $su -
 $visudo
@@ -53,38 +55,49 @@ $visudo
 在最后一行加入：
 xiaxiaowen ALL=(ALL)  ALL
 然后保存退出。
-4. 树莓派 国内源：
+#### 树莓派 国内源
 ```sh
 deb http://mirrors.aliyun.com/raspbian/raspbian/ wheezy main non-free contrib
 deb-src http://mirrors.aliyun.com/raspbian/raspbian/ wheezy main non-free contrib
 ```
 
-5. 树莓派 SPI
-    sudo raspi-config 配置打开spi接口
-    查看spi驱动是否加载：lsmod:中是否有spi_bcm2835,或者find /dev/ -name "spi*"是否有设备/dev/spidev0.1 /dev/spidev0.0
-6. nc指令
+#### 树莓派SPI接口
+配置打开spi接口
+
+```sh
+sudo raspi-config
+```
+
+查看spi驱动是否加载：lsmod:中是否有spi_bcm2835,或者find /dev/ -name "spi*"是否有设备/dev/spidev0.1 /dev/spidev0.0
+### nc指令
+```sh
     nc -u 192.168.0.117 50001 建立udp client
-    
-7. raspberry 内核、工具链：https://github.com/raspberrypi
-8. 
-(1)lsmod(list module,将模块列表显示)，功能是打印出当前内核中已经安装的模块列表
+```
 
-(2)insmod（install module，安装模块），功能是向当前内核中去安装一个模块，用法是insmod xxx.ko
+### raspberry 内核、工具链
+https://github.com/raspberrypi
+### 驱动模块操作命令
+1. lsmod(list module,将模块列表显示)，功能是打印出当前内核中已经安装的模块列表
 
-(3)modinfo（module information，模块信息），功能是打印出一个内核模块的自带信息。，用法是modinfo xxx.ko，注意要加.ko，也就是说是一个静态的文件形式。
+2. insmod（install module，安装模块），功能是向当前内核中去安装一个模块，用法是insmod xxx.ko
 
-(4)rmmod（remove module，卸载模块），功能是从当前内核中卸载一个已经安装了的模块，用法是rmmod xxx.ko  rmmod xxx都可以
+3. modinfo（module information，模块信息），功能是打印出一个内核模块的自带信息。，用法是modinfo xxx.ko，注意要加.ko，也就是说是一个静态的文件形式。
 
-(5)剩下的后面再说，暂时用不到（如modprobe、depmod等）
+4. rmmod（remove module，卸载模块），功能是从当前内核中卸载一个已经安装了的模块，用法是rmmod xxx.ko  rmmod xxx都可以
 
-9. wiringPi
-安装： 
+5. 剩下的后面再说，暂时用不到（如modprobe、depmod等）
+
+### wiringPi
+安装：
+
 ```sh
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
 ```
+
 读取当前引脚配置：
+
 ```sh
 gpio readall
  +-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
@@ -114,27 +127,70 @@ gpio readall
  | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
  +-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
 ```
-linux查看硬件信息及驱动设备相关整理
-查看声卡设备：cat /proc/asound/cards
+### linux查看硬件信息及驱动设备相关整理
+查看声卡设备：
 
-查看USB设备：cat /proc/bus/usb/devices
+```sh
+cat /proc/asound/cards
+```
 
+查看USB设备：
 
-常用命令整理如下：
-用硬件检测程序kuduz探测新硬件：service kudzu start ( or restart)
-查看CPU信息：cat /proc/cpuinfo
-查看板卡信息：cat /proc/pci
-查看PCI信息：lspci (相比cat /proc/pci更直观）
-查看内存信息：cat /proc/meminfo
-查看USB设备：cat /proc/bus/usb/devices
-查看键盘和鼠标:cat /proc/bus/input/devices
-查看系统硬盘信息和使用情况：fdisk & disk - l   & df
-查看各设备的中断请求(IRQ):cat /proc/interrupts
-查看系统体系结构：uname -a
-dmidecode查看硬件信息，包括bios、cpu、内存等信息
-dmesg | more 查看硬件信息
+```sh
+cat /proc/bus/usb/devices
+```
 
-10. 树莓派3B内核编译
+用硬件检测程序kuduz探测新硬件：
+```sh
+service kudzu start # or restart
+```
+查看CPU信息：
+```sh
+cat /proc/cpuinfo
+```
+查看板卡信息：
+```sh
+cat /proc/pci
+```
+查看PCI信息：
+```sh
+lspci # 相比cat /proc/pci更直观
+```
+
+查看内存信息
+```sh
+cat /proc/meminfo
+```
+查看USB设备：
+```sh
+cat /proc/bus/usb/devices
+```
+查看键盘和鼠标:
+```sh
+cat /proc/bus/input/devices
+```
+查看系统硬盘信息和使用情况：
+```sh
+fdisk & disk - l   & df
+```
+查看各设备的中断请求(IRQ):
+```sh
+cat /proc/interrupts
+```
+查看系统体系结构：
+```sh
+uname -a
+```
+查看硬件信息，包括bios、cpu、内存等信息
+```sh
+dmidecode
+```
+查看硬件信息:
+```sh
+dmesg | more
+```
+
+### 树莓派3B内核编译
 参考：https://www.raspberrypi.org/documentation/linux/kernel/building.md
 
 ```sh
@@ -156,17 +212,21 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage modules dtbs
 ```
 
-11. 烧录raspbain到sd中：
+### 烧录raspbain到sd中：
 ```sh
 sudo dd if='/media/xiaxiaowen/document/development/raspberry/2017-11-29-raspbian-stretch-lite.img' of=/dev/sdc bs=512
-#开启ssh登陆：把sd卡插到电脑上，在分区boot中新建一个ssh的文件就行了
-#设置eth0静态ip地址：sdka插到ubuntu中，在rootfs分区中的文件：/etc/dhcpcd.conf末尾增加：
+```
+
+### 设置树莓派eth0静态ip地址
+sdka插到ubuntu中，在rootfs分区中的文件：/etc/dhcpcd.conf末尾增加：
+```sh
 interface eth0
 static ip_address=192.168.0.215/24
 static routers=192.168.0.1
 static domain_name_servers=192.168.0.1 8.8.8.8
+```
 
-13. printk级别
+### printk级别
 
 ```c
 #define KERN_EMERG     "<0>"
@@ -178,24 +238,26 @@ static domain_name_servers=192.168.0.1 8.8.8.8
 #define KERN_INFO      "<6>"
 #define KERN_DEBUG     "<7>"
 ```
-12. THIS_MODULE
+### THIS_MODULE
 定义如下：
 ```c
 #define THIS_MODULE (&__this_module)
 ```
-__this_module是一个struct module变量
+> __this_module是一个struct module变量
 
-查看树莓派gpio的物理地址：
-
+### 查看树莓派gpio的物理地址：
+```sh
 cat /proc/iomem | grep gpio
-
-set -e
+```
+### set -e
 你写的每个脚本都应该在文件开头加上set -e,这句语句告诉bash如果任何语句的执行结果不是true则应该退出。这样的好处是防止错误像滚雪球般变大导致一个致命的错误，而这些错误本应该在之前就被处理掉。如果要增加可读性，可以使用set -o errexit，它的作用与set -e相同。
 
 
 
-1.autoscan (autoconf): 扫描源代码以搜寻普通的可移植性问题，比如检查编译器，库，头文件等，生成文件configure.scan,它是configure.ac的一个雏形。
-2.aclocal (automake):根据已经安装的宏，用户定义宏和acinclude.m4文件中的宏将configure.ac文件所需要的宏集中定义到文件 aclocal.m4中。aclocal是一个perl 脚本程序，它的定义是：“aclocal - create aclocal.m4 by scanning configure.ac”
+### autoscan (autoconf):
+扫描源代码以搜寻普通的可移植性问题，比如检查编译器，库，头文件等，生成文件configure.scan,它是configure.ac的一个雏形。
+### aclocal (automake)
+根据已经安装的宏，用户定义宏和acinclude.m4文件中的宏将configure.ac文件所需要的宏集中定义到文件 aclocal.m4中。aclocal是一个perl 脚本程序，它的定义是：“aclocal - create aclocal.m4 by scanning configure.ac”
  
 user input files   optional input     process          output files
 ================   ==============     =======          ============
@@ -239,7 +301,8 @@ Makefile.am  ----------------------->|        |------> Makefile.in
                                  |          |--------> ltmain.sh
                                  |          |--------> ltconfig
                                  `----------'
-5.autoconf:将configure.ac中的宏展开，生成configure脚本。这个过程可能要用到aclocal.m4中定义的宏。
+### autoconf
+将configure.ac中的宏展开，生成configure脚本。这个过程可能要用到aclocal.m4中定义的宏。
  
 user input files   optional input   processes          output files
 ================   ==============   =========          ============
@@ -250,70 +313,80 @@ user input files   optional input   processes          output files
 configure.ac ----------------------->|autoconf|------> configure ----->autoconfig.h,Makefile
 
 
-使用树莓派的ttl:
+### 使用树莓派的ttl
+```sh
 sudo nano /boot/config.txt
-增加下面一行代码:
+# 增加下面一行代码
 dtoverlay=pi3-miniuart-bt
-ls -l /dev 看看是不是以下对应关系:
+```
+
+重启然后看是否有如下对应关系:
+```sh
+ls -l /dev
 serial0  -> ttyAMA0
 serial1  -> ttyS0
+```
 如果是的话,就是对了.
 
 
-ubuntu core 更改静态ip地址:
+### ubuntu core 更改静态ip地址
+编辑etc/network/interface文件,增加如下:
+```sh
 auto eth0
 iface eth0 inet static
 address 192.168.0.215
 netmask 255.255.255.0
 gateway 192.168.0.1
+```
 
-
-tcpdump使用
-从所有网卡中捕获数据包
+### tcpdump使用
+#### 从所有网卡中捕获数据包
 
 ```sh
 $ tcpdump -i any
 ```
 
-将捕获的包写入文件
+#### 将捕获的包写入文件
 
 ```sh
 $ tcpdump -i eth1 -w packets_file
 ```
 
-读取之前产生的 tcpdump 文件
+#### 读取之前产生的 tcpdump 文件
 ```sh
 $ tcpdump -r packets_file
 ```
 
-获取更多的包信息，并且以可读的形式显示时间戳
+#### 获取更多的包信息，并且以可读的形式显示时间戳
 ```sh
 $ tcpdump -ttttnnvvS
 ```
 
-查看整个网络的数据包
+#### 查看整个网络的数据包
 ```sh
 $ tcpdump net 192.168.1.0/24
 ```
 
-根据 IP 地址查看报文
+#### 根据 IP 地址查看报文
 ```sh
 $ tcpdump host 192.168.1.100
 $ tcpdump src 192.168.1.100
 $ tcpdump dst 192.168.1.100
 ```
 
-查看某个协议或端口号的数据包
+#### 查看某个协议或端口号的数据包
 ```sh
 $ tcpdump ssh
 $ tcpdump port 22
 $ tcpdump portrange 22-125
 ```
 
-使用与或非
-“与” （and，&&）、“或” （or，|| ) 和“非”（not，!） 
+#### 使用与或非
+> “与” （and，&&）、“或” （or，|| ) 和“非”（not，!）
+```sh
 $ tcpdump src 192.168.1.100 && port 22 -w ssh_packets
 $ tcpdump src 192.168.1.100 or dst 192.168.1.50 && port 22 -w ssh_packets
 $ tcpdump port 443 or 80 -w http_packets
 $ tcpdump -i eth0 src port not 22
+```
 
