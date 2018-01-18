@@ -148,3 +148,49 @@ git push pi master
 ```
 git 
 
+
+## 命令别名alias
+
+```sh
+#alias语法
+alias [alias-name[=string]...]
+
+# 列出所有的命令别名
+alias
+
+#删除别名
+unalias aliasname
+
+# 编辑~/.bashrc 重启生效
+alias c = 'clear'
+```
+
+```sh
+alias c = 'clear'
+alias update='sudo apt-get upgrade'
+# 让 mount 命令的输出更漂亮，更方便人类阅读
+alias mount = 'mount |column -t'
+alias h = 'history'
+# 获取时间
+alias now = 'date +"%T"'
+# 获取日期
+alias nowdate = 'date +"%d-%m-%Y"'
+# 快速列出服务区中所有的 TCP/UDP 端口
+alias ports = 'netstat -tulanp'
+## pass options to free ##
+alias meminfo = 'free -m -l -t' 
+## get top process eating memory
+alias psmem = 'ps auxf | sort -nr -k 4' 
+alias psmem10 = 'ps auxf | sort -nr -k 4 | head -10'
+## get top process eating cpu ##
+alias pscpu = 'ps auxf | sort -nr -k 3'
+alias pscpu10 = 'ps auxf | sort -nr -k 3 | head -10' 
+## Get server cpu info ##
+alias cpuinfo = 'lscpu'
+## older system use /proc/cpuinfo ##
+##alias cpuinfo='less /proc/cpuinfo' ##
+## get GPU ram on desktop / laptop##
+alias gpumeminfo = 'grep -i --color memory /var/log/Xorg.0.log'
+
+alias df = 'df -H'
+alias du = 'du -ch'

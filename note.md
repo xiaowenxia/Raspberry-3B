@@ -389,4 +389,134 @@ $ tcpdump src 192.168.1.100 or dst 192.168.1.50 && port 22 -w ssh_packets
 $ tcpdump port 443 or 80 -w http_packets
 $ tcpdump -i eth0 src port not 22
 ```
+### 添加多个git秘钥
+```sh
+touch ~/.ssh/config
+chmod 600 ~/.ssh/config
+# ~/.ssh/config文件的内容为：
+Host github.com www.github.com
+IdentityFile ~/.ssh/id_rsa.github
+# 然后在github中添加ssh秘钥
+# 测试github是否可以使用
+ssh -T git@github.com
+```
 
+### 制作树莓派镜像
+#### 首先下载最新的raspbian的镜像
+https://www.raspberrypi.org/downloads/raspbian/
+#### 查看img信息
+```sh
+$ fdisk -lu 2017-11-29-raspbian-stretch-lite.img
+
+Disk 2017-11-29-raspbian-stretch-lite.img: 1858 MB, 1858076672 bytes
+255 heads, 63 sectors/track, 225 cylinders, total 3629056 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x37665771
+
+                               Device Boot      Start         End      Blocks   Id  System
+2017-11-29-raspbian-stretch-lite.img1            8192       93236       42522+   c  W95 FAT32 (LBA)
+2017-11-29-raspbian-stretch-lite.img2           94208     3629055     1767424   83  Linux
+```
+
+#### 挂载boot分区和文件系统
+```sh
+$ sudo mkdir -p /mnt/ext4
+$ sudo mkdir -p /mnt/fat32
+# 94208 * 512 = 48234496 其中94208为img2的起始扇区地址
+$ sudo mount -o loop,offset=48234496 2017-11-29-raspbian-stretch-lite.img /mnt/ext4
+# 8192 * 512 = 4194304
+$ sudo mount -o loop,offset=4194304 2017-11-29-raspbian-stretch-lite.img /mnt/fat32
+```
+#### 在/mnt/fat32分区新增ssh文件,开启ssh
+```sh
+$ touch ssh
+```
+#### 在/mnt/fat32分区编辑config.txt文件,开启树莓派的TTL
+```sh
+$ sudo vim /mnt/fat32/config.txt
+# 增加下面2行代码
+dtoverlay=pi3-miniuart-bt
+enable_uart=1
+```
+
+#### 删除pi用户,添加clouder用户
+> 注: 以下说的/etc/文件夹都是在/mnt/ext4 中的.
+
+总共有4个文件:
+* /etc/passwd
+* /etc/shadow
+* /etc/group
+* /etc/sudoers
+
+/etc/passwd文件中,删除掉pi的一行,添加下面一行(clouder的UID为1001)
+```sh
+clouder:x:1001:1001:,,,:/home/clouder:/bin/bash
+```
+
+/etc/shadow文件中,删除掉pi的一行,添加如下一行(clouder的密码为qweclouder)
+```sh
+clouder:$6$Owp1QTMb$NcXtJxnqJ8TW1QAvZdVP.DWG59HNK9.vVQfcqIyn1mTnpSBoYwMEghg3LR6aK7xKNLfxESbb.hAqZz6HYHaKc/:17540:0:99999:7:::
+```
+
+/etc/group文件中,删除掉pi的一行,添加如下一行,<strong>同时把所有的`pi`更改为`clouder`</strong>
+```sh
+clouder:x:1001:
+```
+
+/etc/sudoers文件中,添加如下一行:
+```sh
+clouder ALL=(ALL) ALL
+```
+最后把/home/pi文件夹名称更改为 /home/clouder文件夹
+```sh
+$ sudo mv /home/pi /home/clouder
+#更改文件夹拥有者和用户组
+$ sudo chown 1001 clouder
+$ sudo chgrp 1001 clouder
+```
+#### 更改hostname为cloudersemi
+编辑文件:/etc/hosts和/etc/hostname分别更改为cloudersemi
+
+#### 更改静态IP地址
+在/etc/dhcpcd.conf末尾增加：
+```sh
+interface eth0
+static ip_address=192.168.0.218/24
+static routers=192.168.0.1
+static domain_name_servers=192.168.0.1 8.8.8.8
+```
+
+#### 取消挂载
+```sh
+$ sudo umount /mnt/fat32
+$ sudo umount /mnt/ext4
+```
+#### 烧录img到sd卡中
+```sh
+sudo dd if=2017-11-29-raspbian-stretch-lite.img of=/dev/sdc bs=512
+```
+
+### base64
+编码
+```sh
+$ echo xiaxiaowen | base64
+```
+
+解码
+```sh
+$ echo eGlheGlhb3dlbgo= | base64 -d
+```
+
+### raspbian 加入开启启动脚本
+编辑文件 /dev/rc.local
+
+### 关闭miner_daemon.sh
+```sh
+$ sudo killall -9 miner_daemon.sh
+```
+### 关闭miner
+```sh
+$ sudo killall -9 miner
+```
