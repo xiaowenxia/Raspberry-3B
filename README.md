@@ -194,11 +194,13 @@ alias gpumeminfo = 'grep -i --color memory /var/log/Xorg.0.log'
 
 alias df = 'df -H'
 alias du = 'du -ch'
-
+```
 ### 在 Linux 中自定义 bash 命令提示符
+
 [在 Linux 中自定义 bash 命令提示符](https://linux.cn/article-10280-1.html)
 vim ~/.bashrc，添加如下字符：
 ```sh
 PS1="\[\e[31m\]~>\[\e[m\] "
 ```
+
 就只会显示`~> `
